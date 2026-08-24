@@ -29,7 +29,7 @@ jobs:
         run: |
           test -n "$KEYSTORE_BASE64" && test -n "$STORE_PASSWORD" && test -n "$KEY_ALIAS" && test -n "$KEY_PASSWORD"
           printf '%s' "$KEYSTORE_BASE64" | base64 --decode > release.jks
-          printf 'storeFile=../release.jks\nstorePassword=%s\nkeyAlias=%s\nkeyPassword=%s\n' \
+          printf 'storeFile=release.jks\nstorePassword=%s\nkeyAlias=%s\nkeyPassword=%s\n' \
             "$STORE_PASSWORD" "$KEY_ALIAS" "$KEY_PASSWORD" > keystore.properties
       - run: ./gradlew --no-daemon testDebugUnitTest lintRelease assembleRelease bundleRelease
       - name: Checksums
