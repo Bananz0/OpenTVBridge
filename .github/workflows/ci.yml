@@ -20,7 +20,7 @@ jobs:
           java-version: "21"
       - uses: android-actions/setup-android@v3
       - run: sdkmanager "platforms;android-37.0" "build-tools;37.0.0"
-      - uses: gradle/actions/setup-gradle@v4
+      - uses: gradle/actions/setup-gradle@v6
       - run: ./gradlew --no-daemon testDebugUnitTest lintDebug assembleDebug
       - uses: actions/upload-artifact@v4
         with:
