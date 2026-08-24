@@ -6,7 +6,7 @@ affect title detection or metadata matching.
 
 | Target | Contract |
 |---|---|
-| Nuvio | `nuvio://movie/{imdb}` or `nuvio://detail/tv/{imdb}` |
+| Nuvio | `nuvio://movie/{imdb}` or `nuvio://detail/tv/{imdb}`; tries full/GitHub `com.nuvio.tv`, then Play/compatible `com.nuvio.app` |
 | Stremio | `stremio:///detail/{movie|series}/{imdb}` |
 | Plex | Public `https://watch.plex.tv/search?q={title}` URL, targeted to Plex with browser fallback |
 | Jellyfin | Android `ACTION_SEARCH` with a `query` extra targeted to Jellyfin |
@@ -16,7 +16,8 @@ The resolver uses the public Cinemeta movie and series catalog search endpoints
 and only consumes id, type, title, and release-year metadata. OpenTVBridge does
 not bundle a TMDB or Plex credential.
 
-Nuvio does not publish a stable public deep-link specification. Treat those
-two URIs as an interoperability contract that must be tested against current
-Nuvio releases. If it changes, update its adapter and tests without adding a
-dependency on Nuvio implementation code.
+The Nuvio contract is verified against the public parser tests in Nuvio TV
+0.8.7-beta. Its public Gradle configuration defines `com.nuvio.tv` for full
+builds and `com.nuvio.app` for Play builds. Treat this as versioned
+compatibility and retest newer releases. If it changes, update the adapter and
+tests without adding a dependency on Nuvio implementation code.

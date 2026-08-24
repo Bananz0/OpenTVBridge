@@ -4,7 +4,7 @@ import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
 
 enum class TargetApp(val packageName: String) {
-    NUVIO("com.nuvio.app"),
+    NUVIO("com.nuvio.tv"),
     STREMIO("com.stremio.one"),
     PLEX("com.plexapp.android"),
     JELLYFIN("org.jellyfin.androidtv"),
@@ -14,8 +14,12 @@ sealed interface LaunchRequest {
     data class View(
         val uri: String,
         val packageName: String,
+        val fallbackPackageNames: List<String> = emptyList(),
         val allowGenericFallback: Boolean = true,
-    ) : LaunchRequest
+    ) : LaunchRequest {
+        val packageNamesInPriorityOrder: List<String>
+            get() = (listOf(packageName) + fallbackPackageNames).distinct()
+    }
 
     data class Search(
         val query: String,
@@ -33,6 +37,7 @@ object LaunchRequestFactory {
                 "nuvio://detail/tv/${match.imdbId}"
             },
             packageName = target.packageName,
+            fallbackPackageNames = listOf("com.nuvio.app"),
         )
 
         TargetApp.STREMIO -> LaunchRequest.View(

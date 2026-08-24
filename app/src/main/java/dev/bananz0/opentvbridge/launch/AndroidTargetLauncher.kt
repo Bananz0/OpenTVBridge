@@ -1,12 +1,12 @@
 package dev.bananz0.opentvbridge.launch
 
-import android.app.Service
+import android.content.Context
 import android.content.ComponentName
 import android.content.Intent
 import androidx.core.net.toUri
 import dev.bananz0.opentvbridge.core.LaunchRequest
 
-class AndroidTargetLauncher(private val service: Service) {
+class AndroidTargetLauncher(private val context: Context) {
     fun open(request: LaunchRequest): Boolean = when (request) {
         is LaunchRequest.Search -> openSearch(request)
         is LaunchRequest.View -> openView(request)
@@ -24,16 +24,18 @@ class AndroidTargetLauncher(private val service: Service) {
     }
 
     private fun openView(request: LaunchRequest.View): Boolean {
-        val targeted = Intent(Intent.ACTION_VIEW, request.uri.toUri())
-            .setPackage(request.packageName)
-            .addFlags(FLAGS)
-        if (start(targeted)) return true
+        for (packageName in request.packageNamesInPriorityOrder) {
+            val targeted = Intent(Intent.ACTION_VIEW, request.uri.toUri())
+                .setPackage(packageName)
+                .addFlags(FLAGS)
+            if (start(targeted)) return true
+        }
         if (!request.allowGenericFallback) return false
         return start(Intent(Intent.ACTION_VIEW, request.uri.toUri()).addFlags(FLAGS))
     }
 
     private fun start(intent: Intent): Boolean = runCatching {
-        service.startActivity(intent)
+        context.startActivity(intent)
         true
     }.getOrDefault(false)
 

@@ -18,6 +18,10 @@ class LaunchRequestFactoryTest {
             "nuvio://detail/tv/tt0386676",
             (LaunchRequestFactory.forMedia(TargetApp.NUVIO, series) as LaunchRequest.View).uri,
         )
+        val request = LaunchRequestFactory.forMedia(TargetApp.NUVIO, movie) as LaunchRequest.View
+        assertEquals("com.nuvio.tv", request.packageName)
+        assertEquals(listOf("com.nuvio.app"), request.fallbackPackageNames)
+        assertEquals(listOf("com.nuvio.tv", "com.nuvio.app"), request.packageNamesInPriorityOrder)
     }
 
     @Test fun `Stremio uses correct type path`() {

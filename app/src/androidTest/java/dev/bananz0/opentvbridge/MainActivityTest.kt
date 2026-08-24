@@ -3,6 +3,7 @@ package dev.bananz0.opentvbridge
 import androidx.test.core.app.ActivityScenario
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
+import androidx.test.espresso.action.ViewActions.scrollTo
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.ViewMatchers.isChecked
 import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
@@ -28,6 +29,7 @@ class MainActivityTest {
         onView(withId(R.id.target_stremio)).check(matches(isDisplayed()))
         onView(withId(R.id.target_plex)).check(matches(isDisplayed()))
         onView(withId(R.id.target_jellyfin)).check(matches(isDisplayed())).perform(click())
+        onView(withId(R.id.open_test)).perform(scrollTo()).check(matches(isDisplayed()))
 
         scenario?.recreate()
         onView(withId(R.id.target_jellyfin)).check(matches(isChecked()))

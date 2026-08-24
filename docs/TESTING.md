@@ -22,6 +22,22 @@ The Android suite verifies that the TV activity renders, every target can be
 selected, preferences survive activity recreation, and the service metadata is
 declared. The `instrumentation.yml` workflow runs these tests on an emulator.
 
+## Target-app smoke test
+
+The settings screen includes **Test selected app with Iron Man**. It resolves a
+known title through the same metadata client and opens it through the same
+adapter used by the accessibility service. Use it once with each installed
+target before testing launcher cards.
+
+For Nuvio, test both distributions when available:
+
+- `com.nuvio.tv` (full/GitHub distribution)
+- `com.nuvio.app` (Play distribution)
+
+The bridge tries them in that order. Jellyfin requires a configured server to
+show library search results; reaching Jellyfin without a crash verifies only
+the Android hand-off until a server is connected.
+
 ## Required physical-device matrix before a stable release
 
 | Device family | Required checks |

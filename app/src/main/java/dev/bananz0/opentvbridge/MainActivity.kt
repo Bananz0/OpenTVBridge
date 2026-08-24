@@ -9,9 +9,11 @@ import android.widget.CheckBox
 import android.widget.RadioGroup
 import android.widget.TextView
 import android.widget.Toast
+import dev.bananz0.opentvbridge.core.LaunchRequestFactory
 import dev.bananz0.opentvbridge.core.ParsedTitle
 import dev.bananz0.opentvbridge.core.ResolveResult
 import dev.bananz0.opentvbridge.core.TargetApp
+import dev.bananz0.opentvbridge.launch.AndroidTargetLauncher
 import dev.bananz0.opentvbridge.network.CinemetaClient
 import okhttp3.HttpUrl.Companion.toHttpUrl
 import okhttp3.OkHttpClient
@@ -29,7 +31,8 @@ class MainActivity : Activity() {
         configureTargets()
         configureSmartTube()
         findViewById<Button>(R.id.open_accessibility).setOnClickListener { openAccessibility() }
-        findViewById<Button>(R.id.run_test).setOnClickListener { runResolverTest() }
+        findViewById<Button>(R.id.run_test).setOnClickListener { runResolverTest(openTarget = false) }
+        findViewById<Button>(R.id.open_test).setOnClickListener { runResolverTest(openTarget = true) }
     }
 
     private fun configureTargets() {
@@ -61,7 +64,7 @@ class MainActivity : Activity() {
             }
     }
 
-    private fun runResolverTest() {
+    private fun runResolverTest(openTarget: Boolean) {
         val status = findViewById<TextView>(R.id.test_status)
         status.setText(R.string.test_running)
         executor.execute {
@@ -72,12 +75,19 @@ class MainActivity : Activity() {
             val result = client.resolve(ParsedTitle("Iron Man", 2008))
             runOnUiThread {
                 status.text = when (result) {
-                    is ResolveResult.Found -> getString(
-                        R.string.test_success,
-                        result.match.title,
-                        result.match.year?.toString() ?: "?",
-                        result.match.imdbId,
-                    )
+                    is ResolveResult.Found -> {
+                        if (openTarget) {
+                            AndroidTargetLauncher(this).open(
+                                LaunchRequestFactory.forMedia(settings.targetApp, result.match),
+                            )
+                        }
+                        getString(
+                            R.string.test_success,
+                            result.match.title,
+                            result.match.year?.toString() ?: "?",
+                            result.match.imdbId,
+                        )
+                    }
                     ResolveResult.NotFound -> getString(R.string.test_not_found)
                     is ResolveResult.NetworkError -> getString(R.string.test_network_error)
                 }

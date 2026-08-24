@@ -11,6 +11,7 @@
         android:required="false" />
 
     <queries>
+        <package android:name="com.nuvio.tv" />
         <package android:name="com.nuvio.app" />
         <package android:name="com.stremio.one" />
         <package android:name="com.plexapp.android" />

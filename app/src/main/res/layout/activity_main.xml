@@ -113,6 +113,13 @@
             android:layout_marginTop="16dp"
             android:text="@string/run_test" />
 
+        <Button
+            android:id="@+id/open_test"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:text="@string/open_test" />
+
         <TextView
             android:id="@+id/test_status"
             android:layout_width="480dp"

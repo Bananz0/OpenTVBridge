@@ -99,8 +99,8 @@ and [release guide](docs/RELEASING.md).
   subsequent detail page is safer.
 - Same-named works without a visible year can still be ambiguous. A match below
   the confidence floor is not opened.
-- Nuvio has no stable public deep-link specification, so compatibility must be
-  checked against current releases.
+- Nuvio compatibility is verified against its public deep-link parser tests and
+  should be retested when Nuvio changes its contract.
 - Plex and Jellyfin open searches instead of assuming access to a user's
   private library identifiers.
 - Fire TV support is experimental.
