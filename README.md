@@ -61,6 +61,17 @@ traversal, and declines low-confidence metadata matches.
 Review the complete manifest at
 `app/src/main/AndroidManifest.xml`; there is no hidden backend.
 
+## Release authenticity
+
+Official release APKs are signed with this certificate SHA-256 fingerprint:
+
+```text
+36:4F:B1:16:7F:33:57:2D:D0:33:06:90:CA:4B:A7:16:BE:23:31:9A:FC:A7:49:8C:56:43:04:AE:2D:D8:F3:47
+```
+
+Compare it with `apksigner verify --print-certs app-release.apk` and verify the
+published SHA-256 checksum before installing a release.
+
 ## Install a development build
 
 Android 13+ may block accessibility for normally sideloaded apps under
