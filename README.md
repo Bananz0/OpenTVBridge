@@ -1,5 +1,8 @@
 # OpenTVBridge
 
+[![verify](https://github.com/Bananz0/OpenTVBridge/actions/workflows/ci.yml/badge.svg)](https://github.com/Bananz0/OpenTVBridge/actions/workflows/ci.yml)
+[![GPL-3.0-or-later](https://img.shields.io/badge/license-GPL--3.0--or--later-blue.svg)](LICENSE)
+
 OpenTVBridge is a free, account-free Android TV / Google TV accessibility
 utility. Select a film or series on a supported TV launcher and it identifies
 the title, then opens Nuvio, Stremio, Plex, or Jellyfin.
