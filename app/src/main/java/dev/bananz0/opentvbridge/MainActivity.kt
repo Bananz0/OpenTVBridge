@@ -33,6 +33,7 @@ class MainActivity : Activity() {
         findViewById<Button>(R.id.open_accessibility).setOnClickListener { openAccessibility() }
         findViewById<Button>(R.id.run_test).setOnClickListener { runResolverTest(openTarget = false) }
         findViewById<Button>(R.id.open_test).setOnClickListener { runResolverTest(openTarget = true) }
+        findViewById<Button>(R.id.open_smarttube_test).setOnClickListener { runSmartTubeTest() }
     }
 
     private fun configureTargets() {
@@ -92,6 +93,15 @@ class MainActivity : Activity() {
                     is ResolveResult.NetworkError -> getString(R.string.test_network_error)
                 }
             }
+        }
+    }
+
+    private fun runSmartTubeTest() {
+        val launcher = AndroidTargetLauncher(this)
+        val opened = launcher.open(LaunchRequestFactory.forSmartTube("OpenTVBridge test")) ||
+            launcher.open(LaunchRequestFactory.forSmartTube("OpenTVBridge test", beta = true))
+        if (!opened) {
+            Toast.makeText(this, R.string.smarttube_test_unavailable, Toast.LENGTH_LONG).show()
         }
     }
 

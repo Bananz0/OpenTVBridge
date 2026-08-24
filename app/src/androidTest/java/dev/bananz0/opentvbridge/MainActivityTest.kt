@@ -30,6 +30,7 @@ class MainActivityTest {
         onView(withId(R.id.target_plex)).check(matches(isDisplayed()))
         onView(withId(R.id.target_jellyfin)).check(matches(isDisplayed())).perform(click())
         onView(withId(R.id.open_test)).perform(scrollTo()).check(matches(isDisplayed()))
+        onView(withId(R.id.open_smarttube_test)).perform(scrollTo()).check(matches(isDisplayed()))
 
         scenario?.recreate()
         onView(withId(R.id.target_jellyfin)).check(matches(isChecked()))

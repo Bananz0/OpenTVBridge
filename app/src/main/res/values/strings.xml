@@ -14,6 +14,8 @@
     <string name="open_accessibility">Open accessibility settings</string>
     <string name="run_test">Test metadata lookup</string>
     <string name="open_test">Test selected app with Iron Man</string>
+    <string name="open_smarttube_test">Test SmartTube redirect</string>
+    <string name="smarttube_test_unavailable">SmartTube stable or beta is not installed.</string>
     <string name="test_idle">The test resolves “Iron Man (2008)” without opening another app.</string>
     <string name="test_running">Looking up Iron Man…</string>
     <string name="test_success">Resolved %1$s (%2$s) as %3$s</string>

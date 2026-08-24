@@ -120,6 +120,13 @@
             android:layout_marginTop="12dp"
             android:text="@string/open_test" />
 
+        <Button
+            android:id="@+id/open_smarttube_test"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:text="@string/open_smarttube_test" />
+
         <TextView
             android:id="@+id/test_status"
             android:layout_width="480dp"

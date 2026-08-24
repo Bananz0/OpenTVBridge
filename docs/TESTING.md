@@ -29,6 +29,9 @@ known title through the same metadata client and opens it through the same
 adapter used by the accessibility service. Use it once with each installed
 target before testing launcher cards.
 
+Use **Test SmartTube redirect** to verify the stable package and beta fallback
+without waiting for Google TV to surface a YouTube recommendation.
+
 For Nuvio, test both distributions when available:
 
 - `com.nuvio.tv` (full/GitHub distribution)
