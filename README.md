@@ -86,7 +86,8 @@ Requirements: JDK 21 and Android SDK platform 37.0.
 ./gradlew connectedDebugAndroidTest # emulator or connected TV
 ```
 
-The main CI workflow runs unit tests, lint, and a debug build. A separate
+The main CI workflow runs unit tests, lint, and both debug and minified release
+builds. A separate
 instrumentation workflow exercises the UI and manifest on an emulator. See the
 [edge-case matrix](docs/TESTING.md), [compatibility contracts](docs/COMPATIBILITY.md),
 and [release guide](docs/RELEASING.md).

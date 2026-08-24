@@ -21,7 +21,8 @@ jobs:
       - uses: android-actions/setup-android@v4
       - run: sdkmanager "platforms;android-37.0" "build-tools;37.0.0"
       - uses: gradle/actions/setup-gradle@v6
-      - run: ./gradlew --no-daemon testDebugUnitTest lintDebug assembleDebug
+      - name: Verify debug and release variants
+        run: ./gradlew --no-daemon testDebugUnitTest lintDebug lintRelease assembleDebug assembleRelease
       - uses: actions/upload-artifact@v7
         with:
           name: OpenTVBridge-debug
