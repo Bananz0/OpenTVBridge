@@ -1,0 +1,10 @@
+OpenTVBridge is an independent compatibility implementation. It is not
+affiliated with or endorsed by Google, Google TV, Android TV, Nuvio, Stremio,
+Plex, Jellyfin, SmartTube, or Cinemeta. All product names and trademarks belong
+to their respective owners.
+
+This repository does not contain decompiled source code, historical upstream
+source code, extracted API credentials, subscription-bypass patches, or assets
+from TvRecommendationBridge. Compatibility behavior is implemented anew from
+public documentation, externally observable Android intents, and user-owned
+device testing.

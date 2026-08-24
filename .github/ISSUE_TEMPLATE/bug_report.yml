@@ -1,0 +1,33 @@
+name: Compatibility bug
+description: Report a launcher, resolver, or target-app compatibility issue
+title: "[Bug]: "
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: Do not include account names, viewing history, device ids, or credentials.
+  - type: input
+    id: device
+    attributes:
+      label: Device and launcher version
+      placeholder: Google TV Streamer, launcher version …
+    validations:
+      required: true
+  - type: dropdown
+    id: target
+    attributes:
+      label: Target app
+      options: [Nuvio, Stremio, Plex, Jellyfin, SmartTube, Not target-specific]
+    validations:
+      required: true
+  - type: textarea
+    id: behavior
+    attributes:
+      label: Expected and actual behavior
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Redacted debug logs or accessibility fixture
+      description: Remove personal data and unrelated launcher rows.

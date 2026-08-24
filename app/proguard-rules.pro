@@ -1,0 +1,1 @@
+-keep class dev.bananz0.opentvbridge.accessibility.OpenTvBridgeAccessibilityService { *; }

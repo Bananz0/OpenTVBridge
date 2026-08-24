@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">OpenTVBridge</string>
+    <string name="service_name">OpenTVBridge launcher bridge</string>
+    <string name="accessibility_service_description">Reads only supported TV launcher cards and detail pages so the selected title can be opened in an app you choose.</string>
+    <string name="subtitle">Open launcher recommendations in your preferred media app. Free, open source, and account-free.</string>
+    <string name="privacy_summary">The accessibility service is restricted to supported TV launchers. Selected titles are sent to Cinemeta for identification; no account or device identifier is collected.</string>
+    <string name="target_heading">Open films and series in</string>
+    <string name="target_nuvio">Nuvio</string>
+    <string name="target_stremio">Stremio</string>
+    <string name="target_plex">Plex search</string>
+    <string name="target_jellyfin">Jellyfin search</string>
+    <string name="smarttube_label">Redirect recognised YouTube cards to SmartTube</string>
+    <string name="open_accessibility">Open accessibility settings</string>
+    <string name="run_test">Test metadata lookup</string>
+    <string name="test_idle">The test resolves “Iron Man (2008)” without opening another app.</string>
+    <string name="test_running">Looking up Iron Man…</string>
+    <string name="test_success">Resolved %1$s (%2$s) as %3$s</string>
+    <string name="test_not_found">No confident match was found.</string>
+    <string name="test_network_error">Lookup failed. Check the network and try again.</string>
+    <string name="settings_unavailable">Could not open accessibility settings on this device.</string>
+</resources>
