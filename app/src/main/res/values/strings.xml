@@ -5,16 +5,41 @@
     <string name="accessibility_service_description">Reads only supported TV launcher cards and detail pages so the selected title can be opened in an app you choose.</string>
     <string name="subtitle">Open launcher recommendations in your preferred media app. Free, open source, and account-free.</string>
     <string name="privacy_summary">The accessibility service is restricted to supported TV launchers. Selected titles are sent to Cinemeta for identification; no account or device identifier is collected.</string>
+
+    <!-- Destinations -->
     <string name="target_heading">Open films and series in</string>
     <string name="target_nuvio">Nuvio</string>
     <string name="target_stremio">Stremio</string>
-    <string name="target_plex">Plex search</string>
-    <string name="target_jellyfin">Jellyfin search</string>
+    <string name="target_wuplay">WuPlay (experimental)</string>
+    <string name="target_cloudstream">CloudStream</string>
+    <string name="target_plex">Plex</string>
+    <string name="target_jellyfin">Jellyfin</string>
+    <string name="target_fladder">Fladder</string>
+    <string name="target_wholphin">Wholphin</string>
+    <string name="target_emby">Emby (experimental)</string>
+    <string name="target_kodi">Kodi (needs remote control)</string>
+    <string name="target_not_installed">%1$s — not installed</string>
+
+    <!-- Routing -->
+    <string name="routing_heading">Routing</string>
+    <string name="skip_uninstalled_label">Fall back to the next installed app if the first choice is missing</string>
+    <string name="auto_rank_label">Prefer whichever installed app can open the exact title</string>
     <string name="smarttube_label">Redirect recognised YouTube cards to SmartTube</string>
+    <string name="override_heading">Send a type somewhere else</string>
+    <string name="override_movies">Films</string>
+    <string name="override_series">Series</string>
+    <string name="override_none">Use the order above</string>
+
+    <!-- Buttons -->
     <string name="open_accessibility">Open accessibility settings</string>
     <string name="run_test">Test metadata lookup</string>
     <string name="open_test">Test selected app with Iron Man</string>
     <string name="open_smarttube_test">Test SmartTube redirect</string>
+    <string name="open_integrations">Optional connections…</string>
+    <string name="open_diagnostics">Recent activity…</string>
+    <string name="open_about">Licence and notices…</string>
+
+    <!-- Test results -->
     <string name="smarttube_test_unavailable">SmartTube stable or beta is not installed.</string>
     <string name="test_idle">The test resolves “Iron Man (2008)” without opening another app.</string>
     <string name="test_running">Looking up Iron Man…</string>
@@ -22,4 +47,57 @@
     <string name="test_not_found">No confident match was found.</string>
     <string name="test_network_error">Lookup failed. Check the network and try again.</string>
     <string name="settings_unavailable">Could not open accessibility settings on this device.</string>
+
+    <!-- Diagnostics -->
+    <string name="diagnostics_title">Recent activity</string>
+    <string name="diagnostics_explainer">Launcher layouts are controlled by the TV vendor and change without notice. This list shows what OpenTVBridge saw and did, so a failure can be reported precisely. It is held in memory only and is cleared when the app stops.</string>
+    <string name="diagnostics_empty">Nothing recorded yet. Select a film or series on the home screen, then come back.</string>
+    <string name="diagnostics_copy">Copy for a bug report</string>
+    <string name="diagnostics_clear">Clear</string>
+    <string name="diagnostics_copied">Copied to the clipboard.</string>
+    <string name="diagnostics_nothing_to_copy">There is nothing to copy yet.</string>
+    <string name="diagnostics_clipboard_label">OpenTVBridge activity</string>
+
+    <!-- Optional connections -->
+    <string name="integrations_title">Optional connections</string>
+    <string name="integrations_explainer">These are all optional and all belong to you. OpenTVBridge ships no API key of its own; without anything here it uses the keyless Cinemeta lookup and opens searches rather than exact items. Values are stored only on this device and are excluded from backups.</string>
+    <string name="integrations_tmdb_heading">TMDB</string>
+    <string name="integrations_tmdb_explainer">Improves matching for titles Cinemeta does not index, and supplies the id Fladder\'s request route needs.</string>
+    <string name="integrations_tmdb_key">TMDB API key</string>
+    <string name="integrations_plex_heading">Plex</string>
+    <string name="integrations_plex_explainer">With your own token, Plex opens the item page instead of a search.</string>
+    <string name="integrations_plex_token">Plex token</string>
+    <string name="integrations_jellyfin_heading">Jellyfin</string>
+    <string name="integrations_jellyfin_explainer">With a server and key, Jellyfin and Fladder open the exact item in your library instead of a search.</string>
+    <string name="integrations_emby_heading">Emby</string>
+    <string name="integrations_emby_explainer">Emby publishes no intent contract, so this is best-effort: with a server it tries the item, otherwise it just opens the app.</string>
+    <string name="integrations_kodi_heading">Kodi</string>
+    <string name="integrations_kodi_explainer">Needs “Allow remote control via HTTP” in Kodi. OpenTVBridge finds the title in your library and plays it; if Kodi does not have it, the next destination is used instead.</string>
+    <string name="integrations_trakt_heading">Trakt</string>
+    <string name="integrations_trakt_explainer">Trakt has no TV app to open, so this is not a destination: when enabled, an opened title is added to your watchlist.</string>
+    <string name="integrations_trakt_enable">Add opened titles to my Trakt watchlist</string>
+    <string name="integrations_server_url">Server address (for example http://192.168.1.10:8096)</string>
+    <string name="integrations_api_key">API key</string>
+    <string name="integrations_username">Username (optional)</string>
+    <string name="integrations_password">Password (optional)</string>
+    <string name="integrations_client_id">Client ID</string>
+    <string name="integrations_access_token">Access token</string>
+    <string name="integrations_save">Save</string>
+    <string name="integrations_clear">Forget all credentials</string>
+    <string name="integrations_saved">Saved.</string>
+    <string name="integrations_cleared">All stored credentials were removed.</string>
+
+    <!-- Licence and notices -->
+    <string name="about_title">Licence and notices</string>
+    <string name="about_summary">OpenTVBridge is free software licensed under the GNU Affero General Public License, version 3 or later. You may use, study, share, and modify it. If you distribute it, or make a modified version available to others over a network, you must pass on the same freedoms and provide the corresponding source.</string>
+    <string name="about_source_heading">Source code</string>
+    <string name="about_source">The complete corresponding source for this build is published at:\n%1$s\n\nThis build is version %2$s.</string>
+    <string name="about_warranty_heading">No warranty</string>
+    <string name="about_warranty">This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.</string>
+    <string name="about_third_party_heading">Third-party components</string>
+    <string name="about_third_party">This application bundles the Kotlin standard library, AndroidX Core, OkHttp and Okio, and Gson. Each is licensed under the Apache License 2.0, whose terms are available from its own project.</string>
+    <string name="about_trademarks_heading">Trademarks</string>
+    <string name="about_trademarks">Product names belong to their respective owners. OpenTVBridge is an independent implementation and is not affiliated with or endorsed by any named launcher, player, or metadata provider.</string>
+    <string name="about_licence_heading">Full licence text</string>
+    <string name="about_licence_unavailable">The licence text could not be read from this build. It is available at https://www.gnu.org/licenses/agpl-3.0.html</string>
 </resources>

@@ -10,12 +10,24 @@
         android:name="android.hardware.touchscreen"
         android:required="false" />
 
+    <!--
+      Package visibility is enumerated rather than broad: OpenTVBridge can see
+      only the destinations it is built to open, and never the user's wider app
+      inventory.
+    -->
     <queries>
         <package android:name="com.nuvio.tv" />
         <package android:name="com.nuvio.app" />
         <package android:name="com.stremio.one" />
+        <package android:name="app.wuplay.androidtv" />
+        <package android:name="com.lagradost.cloudstream3" />
+        <package android:name="com.lagradost.cloudstream3.prerelease" />
         <package android:name="com.plexapp.android" />
         <package android:name="org.jellyfin.androidtv" />
+        <package android:name="nl.jknaapen.fladder" />
+        <package android:name="com.github.damontecres.wholphin" />
+        <package android:name="tv.emby.embyatv" />
+        <package android:name="org.xbmc.kodi" />
         <package android:name="org.smarttube.stable" />
         <package android:name="org.smarttube.beta" />
     </queries>
@@ -39,6 +51,21 @@
                 <category android:name="android.intent.category.LEANBACK_LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <activity
+            android:name=".IntegrationsActivity"
+            android:exported="false"
+            android:label="@string/integrations_title" />
+
+        <activity
+            android:name=".DiagnosticsActivity"
+            android:exported="false"
+            android:label="@string/diagnostics_title" />
+
+        <activity
+            android:name=".AboutActivity"
+            android:exported="false"
+            android:label="@string/about_title" />
 
         <service
             android:name=".accessibility.OpenTvBridgeAccessibilityService"

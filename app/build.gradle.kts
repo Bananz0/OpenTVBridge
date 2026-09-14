@@ -25,6 +25,15 @@ android {
         versionName = "0.1.0"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         buildConfigField("String", "CINEMETA_BASE_URL", "\"https://v3-cinemeta.strem.io/\"")
+
+        // GPL-3.0 requires recipients to be told where the corresponding
+        // source is. The about screen reads this, and the licence text itself
+        // ships in res/raw so a binary-only recipient still has both.
+        buildConfigField(
+            "String",
+            "SOURCE_URL",
+            "\"https://github.com/Bananz0/OpenTVBridge\"",
+        )
     }
 
     signingConfigs {

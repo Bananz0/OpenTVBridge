@@ -13,3 +13,8 @@ gradlew text eol=lf
 *.jar binary
 *.apk binary
 *.aab binary
+
+# The licence is a legal artifact: keep both copies byte-identical
+# regardless of platform, so the text bundled in the APK is deterministic.
+LICENSE text eol=lf
+app/src/main/res/raw/agpl_3_0.txt text eol=lf

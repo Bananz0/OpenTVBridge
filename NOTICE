@@ -1,10 +1,35 @@
+OpenTVBridge
+Copyright (C) 2026 OpenTVBridge contributors
+
+This program is free software: you can redistribute it and/or modify it under
+the terms of the GNU Affero General Public License as published by the Free
+Software Foundation, either version 3 of the License, or (at your option) any
+later version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT
+ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more
+details.
+
+You should have received a copy of the GNU Affero General Public License along
+with this program. If not, see <https://www.gnu.org/licenses/>. The full
+licence text is in LICENSE, and is bundled inside the application itself so
+that a recipient who only ever receives the APK still receives the licence.
+
+---
+
 OpenTVBridge is an independent compatibility implementation. It is not
-affiliated with or endorsed by Google, Google TV, Android TV, Nuvio, Stremio,
-Plex, Jellyfin, SmartTube, or Cinemeta. All product names and trademarks belong
-to their respective owners.
+affiliated with or endorsed by Google, Google TV, Android TV, Amazon, Xiaomi,
+Nuvio, Stremio, WuPlay, CloudStream, Plex, Jellyfin, Fladder, Wholphin, Emby,
+Kodi, SmartTube, Trakt, TMDB, or Cinemeta. All product names and trademarks
+belong to their respective owners.
 
 This repository does not contain decompiled source code, historical upstream
 source code, extracted API credentials, subscription-bypass patches, or assets
 from TvRecommendationBridge. Compatibility behavior is implemented anew from
-public documentation, externally observable Android intents, and user-owned
-device testing.
+public documentation, published upstream source of the destination apps,
+externally observable Android intents, and user-owned device testing.
+
+This product uses the TMDB API but is not endorsed or certified by TMDB. A
+TMDB API key, if used, is supplied by the user under their own TMDB terms;
+none is distributed with this software.

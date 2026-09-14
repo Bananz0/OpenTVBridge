@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:orientation="vertical"
+        android:padding="48dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/integrations_title"
+            android:textColor="@color/text_primary"
+            android:textSize="26sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="560dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:background="@color/surface"
+            android:padding="16dp"
+            android:text="@string/integrations_explainer"
+            android:textColor="@color/text_secondary"
+            android:textSize="14sp" />
+
+        <TextView
+            style="@style/SectionHeading"
+            android:text="@string/integrations_tmdb_heading" />
+
+        <TextView
+            style="@style/SectionBody"
+            android:text="@string/integrations_tmdb_explainer" />
+
+        <EditText
+            android:id="@+id/tmdb_key"
+            style="@style/CredentialField"
+            android:autofillHints="password"
+            android:hint="@string/integrations_tmdb_key" />
+
+        <TextView
+            style="@style/SectionHeading"
+            android:text="@string/integrations_plex_heading" />
+
+        <TextView
+            style="@style/SectionBody"
+            android:text="@string/integrations_plex_explainer" />
+
+        <EditText
+            android:id="@+id/plex_token"
+            style="@style/CredentialField"
+            android:autofillHints="password"
+            android:hint="@string/integrations_plex_token" />
+
+        <TextView
+            style="@style/SectionHeading"
+            android:text="@string/integrations_jellyfin_heading" />
+
+        <TextView
+            style="@style/SectionBody"
+            android:text="@string/integrations_jellyfin_explainer" />
+
+        <EditText
+            android:id="@+id/jellyfin_url"
+            style="@style/CredentialField"
+            android:autofillHints="username"
+            android:hint="@string/integrations_server_url"
+            android:inputType="textUri" />
+
+        <EditText
+            android:id="@+id/jellyfin_key"
+            style="@style/CredentialField"
+            android:autofillHints="password"
+            android:hint="@string/integrations_api_key" />
+
+        <TextView
+            style="@style/SectionHeading"
+            android:text="@string/integrations_emby_heading" />
+
+        <TextView
+            style="@style/SectionBody"
+            android:text="@string/integrations_emby_explainer" />
+
+        <EditText
+            android:id="@+id/emby_url"
+            style="@style/CredentialField"
+            android:autofillHints="username"
+            android:hint="@string/integrations_server_url"
+            android:inputType="textUri" />
+
+        <EditText
+            android:id="@+id/emby_key"
+            style="@style/CredentialField"
+            android:autofillHints="password"
+            android:hint="@string/integrations_api_key" />
+
+        <TextView
+            style="@style/SectionHeading"
+            android:text="@string/integrations_kodi_heading" />
+
+        <TextView
+            style="@style/SectionBody"
+            android:text="@string/integrations_kodi_explainer" />
+
+        <EditText
+            android:id="@+id/kodi_url"
+            style="@style/CredentialField"
+            android:autofillHints="username"
+            android:hint="@string/integrations_server_url"
+            android:inputType="textUri" />
+
+        <EditText
+            android:id="@+id/kodi_user"
+            style="@style/CredentialField"
+            android:autofillHints="username"
+            android:hint="@string/integrations_username" />
+
+        <EditText
+            android:id="@+id/kodi_password"
+            style="@style/CredentialField"
+            android:autofillHints="password"
+            android:hint="@string/integrations_password"
+            android:inputType="textPassword" />
+
+        <TextView
+            style="@style/SectionHeading"
+            android:text="@string/integrations_trakt_heading" />
+
+        <TextView
+            style="@style/SectionBody"
+            android:text="@string/integrations_trakt_explainer" />
+
+        <EditText
+            android:id="@+id/trakt_client_id"
+            style="@style/CredentialField"
+            android:autofillHints="username"
+            android:hint="@string/integrations_client_id" />
+
+        <EditText
+            android:id="@+id/trakt_token"
+            style="@style/CredentialField"
+            android:autofillHints="password"
+            android:hint="@string/integrations_access_token" />
+
+        <CheckBox
+            android:id="@+id/trakt_enabled"
+            style="@style/ToggleChoice"
+            android:layout_width="560dp"
+            android:text="@string/integrations_trakt_enable" />
+
+        <Button
+            android:id="@+id/save"
+            style="@style/ActionButton"
+            android:layout_width="560dp"
+            android:layout_marginTop="28dp"
+            android:text="@string/integrations_save" />
+
+        <Button
+            android:id="@+id/clear"
+            style="@style/ActionButton"
+            android:layout_width="560dp"
+            android:text="@string/integrations_clear" />
+    </LinearLayout>
+</ScrollView>

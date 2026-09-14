@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: AGPL-3.0-or-later
 package dev.bananz0.opentvbridge.core
 
 import java.text.Normalizer
@@ -8,6 +9,8 @@ data class MetadataCandidate(
     val type: MediaType,
     val title: String,
     val year: Int? = null,
+    /** Set by sources keyed on TMDB, whose IMDb id is fetched separately. */
+    val tmdbId: Int? = null,
 )
 
 object MetadataMatcher {
@@ -16,7 +19,9 @@ object MetadataMatcher {
 
     fun bestMatch(query: ParsedTitle, candidates: List<MetadataCandidate>): MediaMatch? =
         candidates.asSequence()
-            .filter { validImdb.matches(it.imdbId) }
+            // A TMDB-keyed candidate has no IMDb id yet; its caller fills one
+            // in before the match is used to build a launch request.
+            .filter { validImdb.matches(it.imdbId) || it.tmdbId != null }
             .distinctBy { Triple(it.imdbId, it.type, normalize(it.title)) }
             .map { it to score(query, it) }
             .filter { it.second >= MINIMUM_SCORE }
@@ -27,7 +32,14 @@ object MetadataMatcher {
             )
             .firstOrNull()
             ?.let { (candidate, score) ->
-                MediaMatch(candidate.imdbId, candidate.type, candidate.title, candidate.year, score)
+                MediaMatch(
+                    imdbId = candidate.imdbId,
+                    type = candidate.type,
+                    title = candidate.title,
+                    year = candidate.year,
+                    score = score,
+                    tmdbId = candidate.tmdbId,
+                )
             }
 
     fun score(query: ParsedTitle, candidate: MetadataCandidate): Int {

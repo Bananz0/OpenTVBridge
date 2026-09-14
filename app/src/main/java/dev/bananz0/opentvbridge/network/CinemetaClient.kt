@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: AGPL-3.0-or-later
 package dev.bananz0.opentvbridge.network
 
 import dev.bananz0.opentvbridge.core.MediaType
@@ -5,7 +6,6 @@ import dev.bananz0.opentvbridge.core.MetadataCandidate
 import dev.bananz0.opentvbridge.core.MetadataMatcher
 import dev.bananz0.opentvbridge.core.ParsedTitle
 import dev.bananz0.opentvbridge.core.ResolveResult
-import com.google.gson.JsonParser
 import okhttp3.HttpUrl
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -54,28 +54,22 @@ class CinemetaClient(
     }
 
     internal fun parseCandidates(json: String, requestedType: MediaType): List<MetadataCandidate> {
-        val root = JsonParser.parseString(json).takeIf { it.isJsonObject }?.asJsonObject
-            ?: return emptyList()
+        val root = parseJsonObject(json) ?: return emptyList()
         val metas = root.getAsJsonArray("metas") ?: return emptyList()
         return buildList {
             for (element in metas) {
                 if (!element.isJsonObject) continue
                 val item = element.asJsonObject
-                fun string(name: String): String = item.get(name)
-                    ?.takeUnless { it.isJsonNull }
-                    ?.runCatching { asString }
-                    ?.getOrNull()
-                    .orEmpty()
-                val id = string("imdb_id").ifBlank { string("id") }
-                val title = string("name").trim()
+                val id = item.stringOrEmpty("imdb_id").ifBlank { item.stringOrEmpty("id") }
+                val title = item.stringOrEmpty("name").trim()
                 if (id.isBlank() || title.isBlank()) continue
-                val itemType = when (string("type").lowercase()) {
+                val itemType = when (item.stringOrEmpty("type").lowercase()) {
                     "movie" -> MediaType.MOVIE
                     "series", "tv" -> MediaType.SERIES
                     else -> requestedType
                 }
                 val year = Regex("(?:19|20)\\d{2}")
-                    .find(string("releaseInfo"))
+                    .find(item.stringOrEmpty("releaseInfo"))
                     ?.value
                     ?.toIntOrNull()
                 add(MetadataCandidate(id, itemType, title, year))

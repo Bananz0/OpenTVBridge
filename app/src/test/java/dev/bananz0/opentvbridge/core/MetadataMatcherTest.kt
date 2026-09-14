@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: AGPL-3.0-or-later
 package dev.bananz0.opentvbridge.core
 
 import org.junit.Assert.assertEquals

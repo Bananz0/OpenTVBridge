@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: AGPL-3.0-or-later
 package dev.bananz0.opentvbridge.core
 
 private val YEAR_SUFFIX = Regex("""\s*[\[(](19\d{2}|20\d{2})[\])]\s*$""")
@@ -6,27 +7,103 @@ private val EDITION_SUFFIX = Regex(
     RegexOption.IGNORE_CASE,
 )
 
+/** Spaces Google TV emits around punctuation that break naive marker matching. */
+private val NON_BREAKING_SPACES = Regex("[\u00A0\u202F\u2009]")
+
+/**
+ * Launcher cards describe themselves in the device language, so detection
+ * markers are per-locale. Upstream hard-coded Spanish; this keeps the same
+ * shape but covers the languages Google TV ships on TV hardware.
+ */
+data class LauncherMarkers(
+    val language: String,
+    val duration: List<String>,
+    val media: List<String>,
+    val sponsored: List<String>,
+)
+
 object LauncherTextParser {
-    private val youtubeMarkers = listOf("duración:", "duration:")
-    private val mediaMarkers = listOf(
-        "cuesta:",
-        "se necesita una suscripción a",
-        "puntuación:",
-        "costs:",
-        "requires a subscription to",
-        "rating:",
+    val markers: List<LauncherMarkers> = listOf(
+        LauncherMarkers(
+            language = "en",
+            duration = listOf("duration:", "length:"),
+            media = listOf("costs:", "requires a subscription to", "rating:", "score:"),
+            sponsored = listOf("sponsored"),
+        ),
+        LauncherMarkers(
+            language = "es",
+            duration = listOf("duración:"),
+            media = listOf("cuesta:", "se necesita una suscripción a", "puntuación:"),
+            sponsored = listOf("patrocinado"),
+        ),
+        LauncherMarkers(
+            language = "de",
+            duration = listOf("dauer:", "länge:"),
+            media = listOf(
+                "kostet:",
+                "erfordert ein abo von",
+                "erfordert ein abonnement",
+                "bewertung:",
+            ),
+            sponsored = listOf("gesponsert"),
+        ),
+        LauncherMarkers(
+            language = "fr",
+            duration = listOf("durée :", "durée:"),
+            media = listOf(
+                "coûte :",
+                "coûte:",
+                "nécessite un abonnement à",
+                "nécessite un abonnement",
+                "note :",
+                "note:",
+            ),
+            sponsored = listOf("sponsorisé"),
+        ),
+        LauncherMarkers(
+            language = "it",
+            duration = listOf("durata:"),
+            media = listOf("costa:", "richiede un abbonamento a", "valutazione:"),
+            sponsored = listOf("sponsorizzato"),
+        ),
+        LauncherMarkers(
+            language = "pt",
+            duration = listOf("duração:"),
+            media = listOf(
+                "custa:",
+                "requer uma assinatura",
+                "requer uma subscrição",
+                "classificação:",
+            ),
+            sponsored = listOf("patrocinado"),
+        ),
+        LauncherMarkers(
+            language = "nl",
+            duration = listOf("duur:", "speelduur:"),
+            media = listOf("kost:", "vereist een abonnement op", "beoordeling:"),
+            sponsored = listOf("gesponsord"),
+        ),
+        LauncherMarkers(
+            language = "pl",
+            duration = listOf("czas trwania:"),
+            media = listOf("kosztuje:", "wymaga subskrypcji", "ocena:"),
+            sponsored = listOf("sponsorowane"),
+        ),
     )
+
+    private val durationMarkers = markers.flatMap(LauncherMarkers::duration)
+    private val mediaMarkers = markers.flatMap(LauncherMarkers::media)
+    private val sponsoredMarkers = markers.flatMap(LauncherMarkers::sponsored)
 
     fun fromDescription(
         description: CharSequence?,
         className: CharSequence? = null,
         eventText: List<CharSequence> = emptyList(),
     ): DetectedContent? {
-        val raw = description?.toString()?.trim().orEmpty()
-        if (raw.isBlank()) return null
-        if (raw.equals("patrocinado", true) || raw.equals("sponsored", true)) return null
+        val raw = normalizeSpaces(description?.toString()).trim()
+        if (raw.isBlank() || isSponsored(raw)) return null
 
-        markerIndex(raw, youtubeMarkers)?.let { index ->
+        markerIndex(raw, durationMarkers)?.let { index ->
             return cleanTitle(raw.substring(0, index))
                 .takeIf(String::isNotBlank)
                 ?.let(DetectedContent::YouTube)
@@ -48,15 +125,13 @@ object LauncherTextParser {
     }
 
     fun fromHeroText(parts: List<CharSequence>?): DetectedContent.Media? {
-        val first = parts?.firstOrNull()?.toString()?.trim().orEmpty()
-        if (first.isBlank() || first.equals("patrocinado", true) || first.equals("sponsored", true)) {
-            return null
-        }
+        val first = normalizeSpaces(parts?.firstOrNull()?.toString()).trim()
+        if (first.isBlank() || isSponsored(first)) return null
         return parseTitle(first)?.let(DetectedContent::Media)
     }
 
     fun parseTitle(value: String?): ParsedTitle? {
-        var title = value?.trim()?.trimEnd(',', '·', '-', '—')?.trim().orEmpty()
+        var title = normalizeSpaces(value).trim().trimEnd(',', '·', '-', '—').trim()
         if (title.isBlank()) return null
 
         while (true) {
@@ -71,6 +146,13 @@ object LauncherTextParser {
 
         return title.takeIf(String::isNotBlank)?.let { ParsedTitle(it, year) }
     }
+
+    /** Exposed so diagnostics can explain why a card was dropped. */
+    fun isSponsored(value: String): Boolean =
+        sponsoredMarkers.any { value.equals(it, ignoreCase = true) }
+
+    private fun normalizeSpaces(value: String?): String =
+        value.orEmpty().replace(NON_BREAKING_SPACES, " ")
 
     private fun markerIndex(value: String, markers: List<String>): Int? =
         markers.map { value.indexOf(it, ignoreCase = true) }

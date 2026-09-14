@@ -41,6 +41,74 @@ The bridge tries them in that order. Jellyfin requires a configured server to
 show library search results; reaching Jellyfin without a crash verifies only
 the Android hand-off until a server is connected.
 
+## Emulator verification (Google TV, API 36)
+
+Run against AVD `OpenTVBridgeApi36`
+(`system-images/android-36/google-tv/x86_64`, booted with `-gpu auto`; the
+image accepts arm64 destination APKs through built-in translation). The Google
+TV image ships the real `com.google.android.apps.tv.launcherx` launcher with
+live recommendation rows, so the launcher-card flow is exercised against the
+real launcher, not a stub.
+
+The instrumented smoke suite passes on the AVD (4/4, zero failures). Scope
+Gradle to one device with `ANDROID_SERIAL=emulator-5554` — without it the
+suite also fans out to any attached phone, where a locked screen and enabled
+animations produce environmental failures (`NoActivityResumedException`,
+scroll blocked by animations) unrelated to the app.
+
+Destinations installed from their GitHub releases plus official sources:
+Nuvio, Stremio, WuPlay, CloudStream, Jellyfin, Fladder, Wholphin, SmartTube,
+Kodi. Emby and Plex have no public Android TV APK (GitHub carries only the
+mobile `com.mb.android`; Plex needs an account token), so their deep links
+stay covered by unit tests until a device with them is available.
+
+On-device deep-link contracts, verified with
+`cmd package query-activities` plus `am start -W` probes that confirm the
+landing activity:
+
+| Destination | Verified intent | Landing |
+|---|---|---|
+| Nuvio | `nuvio://movie/{imdb}`, `nuvio://detail/tv/{imdb}` | Nuvio detail activity |
+| Stremio | `stremio:///detail/{movie\|series}/{imdb}` | Stremio player/detail |
+| WuPlay | `wuplay://{movie\|series}/{imdb}` | MainActivity claims it |
+| CloudStream | `cloudstreamsearch://{title}` | CloudStream search |
+| Jellyfin | explicit component + `Search` / `ItemId` extras | StartupActivity |
+| Fladder | `fladder:///details?id=`, `fladder:///seerr/{movie\|tv}/{tmdbId}` | Fladder detail |
+| Wholphin | `wholphin://view?itemId=`, `wholphin://search?query=` | Wholphin |
+| SmartTube | `https://www.youtube.com/results?search_query=` | SearchTagsActivity |
+| Kodi | plain launch (JSON-RPC follow-up) | Kodi home |
+
+Nuvio also registers the `stremio://` scheme, so a bare scheme intent would
+raise a chooser — the bridge's explicit `-p` package targeting is what keeps
+the hand-off deterministic.
+
+The accessibility pipeline was exercised end-to-end against the real Google TV
+launcher: with the debug service bound
+(`settings put secure enabled_accessibility_services
+dev.bananz0.opentvbridge.debug/...OpenTvBridgeAccessibilityService`), activating
+a launcher hero card with `DPAD_CENTER` produced the full chain in the
+diagnostics log —
+
+```
+14:48:15  DETECTED launcher=com.google.android.apps.tv.launcherx parsed="Doctor Strange"
+14:48:16  RESOLVED match="Doctor Strange" imdb=tt0910865 score=85
+14:48:16  LAUNCHED target=NUVIO
+```
+
+— with `com.nuvio.tv` foreground as the hand-off result. The SmartTube
+redirect path was verified with the in-app **Test SmartTube redirect** button,
+landing directly on SmartTube's search screen. Two device-only findings came
+out of the run:
+
+- WuPlay declares only `CATEGORY_LEANBACK_LAUNCHER`, which made
+  `getLaunchIntentForPackage` report it missing; the installed check now
+  falls back to the Leanback entry point, fixing both the UI hint and routing.
+- The unexported `DiagnosticsActivity` correctly rejects shell launches
+  (`Permission Denial: not exported`), confirming the privacy posture
+  end-to-end. Reach it through the in-app **Recent activity** row; its text
+  uses single-quoted attributes in `uiautomator` dumps, so grep for
+  `text='` not `text="`.
+
 ## Required physical-device matrix before a stable release
 
 | Device family | Required checks |

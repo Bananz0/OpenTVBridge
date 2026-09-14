@@ -54,77 +54,150 @@
 
             <RadioButton
                 android:id="@+id/target_nuvio"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:padding="10dp"
-                android:text="@string/target_nuvio"
-                android:textColor="@color/text_primary"
-                android:textSize="18sp" />
+                style="@style/TargetChoice"
+                android:text="@string/target_nuvio" />
 
             <RadioButton
                 android:id="@+id/target_stremio"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:padding="10dp"
-                android:text="@string/target_stremio"
-                android:textColor="@color/text_primary"
-                android:textSize="18sp" />
+                style="@style/TargetChoice"
+                android:text="@string/target_stremio" />
+
+            <RadioButton
+                android:id="@+id/target_wuplay"
+                style="@style/TargetChoice"
+                android:text="@string/target_wuplay" />
+
+            <RadioButton
+                android:id="@+id/target_cloudstream"
+                style="@style/TargetChoice"
+                android:text="@string/target_cloudstream" />
 
             <RadioButton
                 android:id="@+id/target_plex"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:padding="10dp"
-                android:text="@string/target_plex"
-                android:textColor="@color/text_primary"
-                android:textSize="18sp" />
+                style="@style/TargetChoice"
+                android:text="@string/target_plex" />
 
             <RadioButton
                 android:id="@+id/target_jellyfin"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:padding="10dp"
-                android:text="@string/target_jellyfin"
-                android:textColor="@color/text_primary"
-                android:textSize="18sp" />
+                style="@style/TargetChoice"
+                android:text="@string/target_jellyfin" />
+
+            <RadioButton
+                android:id="@+id/target_fladder"
+                style="@style/TargetChoice"
+                android:text="@string/target_fladder" />
+
+            <RadioButton
+                android:id="@+id/target_wholphin"
+                style="@style/TargetChoice"
+                android:text="@string/target_wholphin" />
+
+            <RadioButton
+                android:id="@+id/target_emby"
+                style="@style/TargetChoice"
+                android:text="@string/target_emby" />
+
+            <RadioButton
+                android:id="@+id/target_kodi"
+                style="@style/TargetChoice"
+                android:text="@string/target_kodi" />
         </RadioGroup>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="28dp"
+            android:text="@string/routing_heading"
+            android:textColor="@color/text_primary"
+            android:textSize="20sp"
+            android:textStyle="bold" />
+
+        <CheckBox
+            android:id="@+id/auto_rank"
+            style="@style/ToggleChoice"
+            android:layout_marginTop="8dp"
+            android:text="@string/auto_rank_label" />
+
+        <CheckBox
+            android:id="@+id/skip_uninstalled"
+            style="@style/ToggleChoice"
+            android:text="@string/skip_uninstalled_label" />
 
         <CheckBox
             android:id="@+id/smarttube_enabled"
-            android:layout_width="wrap_content"
+            style="@style/ToggleChoice"
+            android:text="@string/smarttube_label" />
+
+        <TextView
+            android:layout_width="480dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:padding="10dp"
-            android:text="@string/smarttube_label"
+            android:layout_marginTop="24dp"
+            android:text="@string/override_heading"
             android:textColor="@color/text_primary"
-            android:textSize="16sp" />
+            android:textSize="16sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="480dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="@string/override_movies"
+            android:textColor="@color/text_secondary"
+            android:textSize="14sp" />
+
+        <Spinner
+            android:id="@+id/movie_override"
+            android:layout_width="480dp"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:layout_width="480dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:text="@string/override_series"
+            android:textColor="@color/text_secondary"
+            android:textSize="14sp" />
+
+        <Spinner
+            android:id="@+id/series_override"
+            android:layout_width="480dp"
+            android:layout_height="wrap_content" />
 
         <Button
             android:id="@+id/open_accessibility"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            style="@style/ActionButton"
             android:layout_marginTop="28dp"
             android:text="@string/open_accessibility" />
 
         <Button
+            android:id="@+id/open_integrations"
+            style="@style/ActionButton"
+            android:text="@string/open_integrations" />
+
+        <Button
+            android:id="@+id/open_diagnostics"
+            style="@style/ActionButton"
+            android:text="@string/open_diagnostics" />
+
+        <Button
+            android:id="@+id/open_about"
+            style="@style/ActionButton"
+            android:text="@string/open_about" />
+
+        <Button
             android:id="@+id/run_test"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
+            style="@style/ActionButton"
+            android:layout_marginTop="24dp"
             android:text="@string/run_test" />
 
         <Button
             android:id="@+id/open_test"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
+            style="@style/ActionButton"
             android:text="@string/open_test" />
 
         <Button
             android:id="@+id/open_smarttube_test"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
+            style="@style/ActionButton"
             android:text="@string/open_smarttube_test" />
 
         <TextView

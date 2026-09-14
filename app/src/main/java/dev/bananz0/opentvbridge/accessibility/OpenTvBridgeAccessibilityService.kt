@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: AGPL-3.0-or-later
 package dev.bananz0.opentvbridge.accessibility
 
 import android.accessibilityservice.AccessibilityService
@@ -9,22 +10,21 @@ import android.view.accessibility.AccessibilityEvent
 import android.view.accessibility.AccessibilityNodeInfo
 import dev.bananz0.opentvbridge.BuildConfig
 import dev.bananz0.opentvbridge.SettingsRepository
+import dev.bananz0.opentvbridge.bridge.BridgeFactory
 import dev.bananz0.opentvbridge.core.AccessibilityTreeTitleFinder
 import dev.bananz0.opentvbridge.core.DetectedContent
+import dev.bananz0.opentvbridge.core.DiagnosticStage
+import dev.bananz0.opentvbridge.core.Diagnostics
 import dev.bananz0.opentvbridge.core.LaunchRequestFactory
+import dev.bananz0.opentvbridge.core.LauncherProfile
+import dev.bananz0.opentvbridge.core.LauncherProfiles
 import dev.bananz0.opentvbridge.core.LauncherTextParser
-import dev.bananz0.opentvbridge.core.MetadataMatcher
 import dev.bananz0.opentvbridge.core.NodeSnapshot
 import dev.bananz0.opentvbridge.core.ParsedTitle
 import dev.bananz0.opentvbridge.core.RecentOpenGuard
-import dev.bananz0.opentvbridge.core.ResolveResult
 import dev.bananz0.opentvbridge.launch.AndroidTargetLauncher
-import dev.bananz0.opentvbridge.network.CinemetaClient
-import okhttp3.HttpUrl.Companion.toHttpUrl
-import okhttp3.OkHttpClient
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.Executors
-import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicInteger
 
 class OpenTvBridgeAccessibilityService : AccessibilityService() {
@@ -32,14 +32,9 @@ class OpenTvBridgeAccessibilityService : AccessibilityService() {
     private val mainHandler = Handler(Looper.getMainLooper())
     private val inFlight = ConcurrentHashMap.newKeySet<String>()
     private val recentOpenGuard = RecentOpenGuard()
-    private val resolver by lazy {
-        CinemetaClient(
-            OkHttpClient.Builder().callTimeout(10, TimeUnit.SECONDS).build(),
-            BuildConfig.CINEMETA_BASE_URL.toHttpUrl(),
-        )
-    }
     private val launcher by lazy { AndroidTargetLauncher(this) }
     private val settings by lazy { SettingsRepository(this) }
+    private val diagnostics get() = Diagnostics.log
 
     override fun onServiceConnected() {
         serviceInfo = AccessibilityServiceInfo().apply {
@@ -47,33 +42,34 @@ class OpenTvBridgeAccessibilityService : AccessibilityService() {
                 AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED
             feedbackType = AccessibilityServiceInfo.FEEDBACK_GENERIC
             notificationTimeout = 100
-            flags = AccessibilityServiceInfo.FLAG_REPORT_VIEW_IDS
-            packageNames = SUPPORTED_LAUNCHERS.toTypedArray()
+            // View ids are how detail-page titles are located at all.
+            // Launcher cards are frequently marked unimportant for
+            // accessibility, so without the second flag their nodes never
+            // reach us and detection silently sees an empty tree.
+            flags = AccessibilityServiceInfo.FLAG_REPORT_VIEW_IDS or
+                AccessibilityServiceInfo.FLAG_INCLUDE_NOT_IMPORTANT_VIEWS
+            packageNames = LauncherProfiles.packageNames.toTypedArray()
         }
     }
 
     override fun onAccessibilityEvent(event: AccessibilityEvent?) {
         event ?: return
         val packageName = event.packageName?.toString() ?: return
-        if (packageName !in SUPPORTED_LAUNCHERS) return
+        val profile = LauncherProfiles.forPackage(packageName) ?: return
 
         when (event.eventType) {
-            AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED -> {
-                if (packageName in GOOGLE_LAUNCHERS) scheduleDetailInspection(250L)
-            }
-            AccessibilityEvent.TYPE_VIEW_CLICKED -> handleClick(event, packageName)
+            // Detail pages also open from voice and search results, which
+            // produce no click event at all.
+            AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED ->
+                if (profile.inspectsDetailPages) scheduleDetailInspection(profile, DETAIL_DELAY_MS)
+
+            AccessibilityEvent.TYPE_VIEW_CLICKED -> handleClick(event, profile)
+
             else -> Unit
         }
     }
 
-    private fun handleClick(event: AccessibilityEvent, packageName: String) {
-        if (packageName == FIRE_TV_LAUNCHER) {
-            val title = event.source?.let(::snapshotAndRecycle)
-                ?.let(AccessibilityTreeTitleFinder::findFireTvTitle)
-            title?.let(::resolveAndOpen)
-            return
-        }
-
+    private fun handleClick(event: AccessibilityEvent, profile: LauncherProfile) {
         val detected = LauncherTextParser.fromDescription(
             event.contentDescription,
             event.className,
@@ -85,50 +81,109 @@ class OpenTvBridgeAccessibilityService : AccessibilityService() {
         }
 
         if (detected != null) {
-            handleDetected(detected)
-        } else {
-            // Detail pages are more reliable than card descriptions and keep
-            // punctuation such as commas in titles intact.
-            scheduleDetailInspection(300L)
+            handleDetected(detected, profile)
+            return
         }
+
+        // Cards whose title lives on a child node (Fire TV) are read from the
+        // clicked subtree rather than the event itself.
+        if (profile.cardDescriptionViewIds.isNotEmpty()) {
+            val fromCard = event.source
+                ?.let(::snapshotAndRecycle)
+                ?.let { AccessibilityTreeTitleFinder.findCardTitle(it, profile) }
+            if (fromCard != null) {
+                resolveAndOpen(fromCard, profile)
+                return
+            }
+        }
+
+        // Google TV populates some content descriptions after the click event
+        // is dispatched. Re-reading the clicked node recovers those; the detail
+        // sweep afterwards covers cards that open a detail page instead.
+        scheduleSourceRetry(event, profile)
+        if (profile.inspectsDetailPages) scheduleDetailInspection(profile, CLICK_DETAIL_DELAY_MS)
     }
 
-    private fun scheduleDetailInspection(delayMs: Long) {
+    private fun scheduleSourceRetry(event: AccessibilityEvent, profile: LauncherProfile) {
+        val source = event.source ?: return
+        mainHandler.postDelayed({
+            val description = runCatching {
+                source.refresh()
+                source.contentDescription
+            }.getOrNull()
+            runCatching {
+                @Suppress("DEPRECATION")
+                source.recycle()
+            }
+            val detected = LauncherTextParser.fromDescription(description) ?: return@postDelayed
+            handleDetected(detected, profile)
+        }, LATE_DESCRIPTION_DELAY_MS)
+    }
+
+    private fun scheduleDetailInspection(profile: LauncherProfile, delayMs: Long) {
         mainHandler.postDelayed({
             val root = rootInActiveWindow ?: return@postDelayed
-            val parsed = snapshotAndRecycle(root).let(AccessibilityTreeTitleFinder::findGoogleTitle)
-            parsed?.let(::resolveAndOpen)
+            val snapshot = snapshotAndRecycle(root)
+            val parsed = AccessibilityTreeTitleFinder.findDetailTitle(snapshot, profile)
+                ?: AccessibilityTreeTitleFinder.findCardTitle(snapshot, profile)
+                ?: return@postDelayed
+            resolveAndOpen(parsed, profile)
         }, delayMs)
     }
 
-    private fun handleDetected(content: DetectedContent) {
+    private fun handleDetected(content: DetectedContent, profile: LauncherProfile) {
         when (content) {
-            is DetectedContent.Media -> resolveAndOpen(content.parsedTitle)
+            is DetectedContent.Media -> resolveAndOpen(content.parsedTitle, profile)
+
             is DetectedContent.YouTube -> {
-                if (!settings.smartTubeEnabled || !recentOpenGuard.shouldOpen("youtube:${content.title}")) return
-                val stable = LaunchRequestFactory.forSmartTube(content.title)
-                if (!launcher.open(stable)) {
-                    launcher.open(LaunchRequestFactory.forSmartTube(content.title, beta = true))
+                if (!settings.smartTubeEnabled) {
+                    diagnostics.record(
+                        stage = DiagnosticStage.IGNORED,
+                        launcherPackage = profile.packageName,
+                        parsedTitle = content.title,
+                        detail = "SmartTube redirect disabled",
+                    )
+                    return
                 }
+                if (!recentOpenGuard.shouldOpen("youtube:${content.title}")) return
+
+                val opened = launcher.open(LaunchRequestFactory.forSmartTube(content.title)) ||
+                    launcher.open(LaunchRequestFactory.forSmartTube(content.title, beta = true))
+                diagnostics.record(
+                    stage = if (opened) DiagnosticStage.LAUNCHED else DiagnosticStage.FAILED,
+                    launcherPackage = profile.packageName,
+                    parsedTitle = content.title,
+                    detail = if (opened) "SmartTube" else "SmartTube is not installed",
+                )
             }
         }
     }
 
-    private fun resolveAndOpen(query: ParsedTitle) {
-        val key = MetadataMatcher.normalize(query.title) + ":" + (query.year ?: "")
+    private fun resolveAndOpen(query: ParsedTitle, profile: LauncherProfile) {
+        val key = query.title.lowercase() + ":" + (query.year ?: "")
         if (!inFlight.add(key)) return
+
+        diagnostics.record(
+            stage = DiagnosticStage.DETECTED,
+            launcherPackage = profile.packageName,
+            parsedTitle = query.title,
+            parsedYear = query.year,
+        )
+        debug("Detected ${query.title}")
+
         background.execute {
             try {
-                when (val result = resolver.resolve(query)) {
-                    is ResolveResult.Found -> {
-                        if (recentOpenGuard.shouldOpen("${result.match.type}:${result.match.imdbId}")) {
-                            val request = LaunchRequestFactory.forMedia(settings.targetApp, result.match)
-                            mainHandler.post { launcher.open(request) }
-                        }
-                    }
-                    ResolveResult.NotFound -> debug("No confident metadata match for ${query.title}")
-                    is ResolveResult.NetworkError -> debug("Metadata network error: ${result.message}")
-                }
+                // Built per pass so credential and routing changes take effect
+                // without re-enabling the accessibility service.
+                BridgeFactory.pipeline(this, settings, recentOpenGuard)
+                    .handle(query, profile.packageName)
+            } catch (error: Exception) {
+                diagnostics.record(
+                    stage = DiagnosticStage.FAILED,
+                    launcherPackage = profile.packageName,
+                    parsedTitle = query.title,
+                    detail = error.message ?: error.javaClass.simpleName,
+                )
             } finally {
                 inFlight.remove(key)
             }
@@ -187,13 +242,14 @@ class OpenTvBridgeAccessibilityService : AccessibilityService() {
 
     private companion object {
         const val TAG = "OpenTVBridge"
-        const val FIRE_TV_LAUNCHER = "com.amazon.tv.launcher"
         const val MAX_DEPTH = 20
         const val MAX_NODES = 400
-        val GOOGLE_LAUNCHERS = setOf(
-            "com.google.android.apps.tv.launcherx",
-            "com.google.android.tvlauncher",
-        )
-        val SUPPORTED_LAUNCHERS = GOOGLE_LAUNCHERS + FIRE_TV_LAUNCHER
+
+        /** Detail pages settle shortly after the window-state change. */
+        const val DETAIL_DELAY_MS = 250L
+        const val CLICK_DETAIL_DELAY_MS = 300L
+
+        /** Matches the delay upstream used for late content descriptions. */
+        const val LATE_DESCRIPTION_DELAY_MS = 600L
     }
 }

@@ -1,9 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+  This declaration is kept in step with what the service actually requests at
+  runtime in onServiceConnected(), so the manifest never understates the
+  service's real event or package scope.
+-->
 <accessibility-service xmlns:android="http://schemas.android.com/apk/res/android"
     android:accessibilityEventTypes="typeViewClicked|typeWindowStateChanged"
     android:accessibilityFeedbackType="feedbackGeneric"
+    android:accessibilityFlags="flagReportViewIds|flagIncludeNotImportantViews"
     android:canRetrieveWindowContent="true"
     android:description="@string/accessibility_service_description"
     android:notificationTimeout="100"
-    android:packageNames="com.google.android.apps.tv.launcherx,com.google.android.tvlauncher,com.amazon.tv.launcher"
+    android:packageNames="com.google.android.apps.tv.launcherx,com.google.android.tvlauncher,com.amazon.tv.launcher,com.amazon.tv.leanbacklauncher,com.mitv.tvhome"
     android:settingsActivity="dev.bananz0.opentvbridge.MainActivity" />

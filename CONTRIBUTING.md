@@ -1,6 +1,6 @@
 # Contributing
 
-By contributing, you agree that your work is licensed under GPL-3.0-or-later
+By contributing, you agree that your work is licensed under AGPL-3.0-or-later
 and that you have the right to submit it.
 
 ## Development
